@@ -109,6 +109,6 @@ public class ReservationService implements IReservationService {
         return hotel.getPrice().multiply(charger_price_percentage);
     }
 
-    private static final BigDecimal charger_price_percentage = BigDecimal.valueOf(1.20);
+    public static final BigDecimal charger_price_percentage = BigDecimal.valueOf(1.20);
 
 }

@@ -1,8 +1,6 @@
 package com.debuggeando_ideas.best_travel.infrastructure.services;
 
-import com.debuggeando_ideas.best_travel.api.models.responses.FlyResponse;
 import com.debuggeando_ideas.best_travel.api.models.responses.HotelResponse;
-import com.debuggeando_ideas.best_travel.domain.entities.FlyEntity;
 import com.debuggeando_ideas.best_travel.domain.entities.HotelEntity;
 import com.debuggeando_ideas.best_travel.domain.repositories.HotelRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.IHotelService;
@@ -25,6 +23,8 @@ import java.util.stream.Collectors;
 public class HotelService implements IHotelService {
 
     private final HotelRepository hotelRepository;
+
+    //Paginacion
     @Override
     public Page<HotelResponse> readAll(Integer page, Integer size, SortType sortType) {
         PageRequest pageRequest = null;
@@ -54,7 +54,7 @@ public class HotelService implements IHotelService {
     }
 
     @Override
-    public Set<HotelResponse> readGreaterThan(Integer rating) {
+    public Set<HotelResponse> readByRating(Integer rating) {
         return this.hotelRepository.findByRatingGreaterThan(rating)
                 .stream()
                 .map(this::entityToResponse)
