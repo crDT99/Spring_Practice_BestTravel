@@ -8,12 +8,12 @@ import java.util.UUID;
 public interface ITourService extends SimpleCRUDService<TourRequest, TourResponse , Long>{
 
 // manage flight tickets
-    void removeTicket(UUID ticketID, Long tourID);
-    UUID addTicket(Long flyId, Long tourID);
+    void removeTicket(Long tourID, UUID ticketID );
+    UUID addTicket(Long tourID, Long flyId);
 
     // manage reservations
-    void removeReservation(UUID reservationID, Long tourID);
-    UUID addReservation(Long reservationID, Long tourID);
+    void removeReservation(Long tourID,  UUID reservationID);
+    UUID addReservation(Long reservationID, Long tourID, Integer totalDays);
 
 
 }

@@ -8,6 +8,7 @@ import com.debuggeando_ideas.best_travel.domain.repositories.CustomerRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.FlyRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.TicketRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITicketService;
+import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
 import com.debuggeando_ideas.best_travel.util.BestTravelUtil;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,9 @@ public class TicketService implements ITicketService {
     private final CustomerRepository customerRepository;
     private final TicketRepository ticketRepository;
 
+    //  ---- Helpers ----
+    private final CustomerHelper customerHelper;
+
 // *************************** CRUD ***************************
 
     // ------------- Create Method -------------
@@ -53,6 +57,7 @@ public class TicketService implements ITicketService {
 
         var ticketPersisted = this.ticketRepository.save(ticketToPersist);
         log.info("Ticket Saved with id:{}", ticketPersisted.getId());
+        customerHelper.increase(customer.getDni(), TicketService.class);
 
         return this.entityToResponse(ticketPersisted);
     }
