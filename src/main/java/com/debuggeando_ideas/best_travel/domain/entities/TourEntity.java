@@ -51,7 +51,7 @@ public class TourEntity  implements Serializable {
         this.tickets.forEach(ticket -> ticket.setTour(this));
     }
 
-    // metodo para eliminar un ticket asociado
+    // Metodo para eliminar un ticket asociado
     public void removeTicket(UUID id){
         this.tickets.forEach(ticket->{
             if(ticket.getId().equals(id)){
@@ -59,5 +59,30 @@ public class TourEntity  implements Serializable {
             }
         });
     }
+
+    // Metodo para agregar un nuevo Ticket
+    public void addTicket(TicketEntity ticket){
+        if(Objects.isNull(this.tickets)) this.tickets = new HashSet<>();
+        this.tickets.add(ticket);
+        this.tickets.forEach(ticketIteration -> ticketIteration.setTour(this));
+    }
+
+    // Metodo para eliminar una Reservacion asociada
+    public void removeReservation(UUID id){
+        this.reservations.forEach(reservation->{
+            if(reservation.getId().equals(id)){
+                reservation.setTour(null);
+            }
+        });
+    }
+
+    // Metodo para agregar una nueva Reservacion
+    public void addReservation(ReservationEntity reservation){
+        if(Objects.isNull(this.reservations)) this.reservations = new HashSet<>();
+        this.reservations.add(reservation);
+        this.reservations.forEach(reservationIteration -> reservationIteration.setTour(this));
+    }
+
+
 
 }

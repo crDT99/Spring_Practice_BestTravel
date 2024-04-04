@@ -66,7 +66,31 @@ public class TourHelper {
 
 
     public TicketEntity createTicket(FlyEntity fly, CustomerEntity customer){
-        //asd
+        var ticketToPersist = TicketEntity.builder()
+                .id(UUID.randomUUID())
+                .fly(fly)
+                .customer(customer)
+                .price(fly.getPrice().multiply(TicketService.charger_price_percentage))
+                .purchaseDate(LocalDate.now())
+                .arrivalDate(BestTravelUtil.getRandomLatter())
+                .departureDate(BestTravelUtil.getRandomSoon())
+                .build();
+        return  this.ticketRepository.save(ticketToPersist);
+    }
+
+    public ReservationEntity createReservation(HotelEntity hotel, CustomerEntity customer, Integer totalDays){
+        var reservationToPersist = ReservationEntity.builder()
+                .id(UUID.randomUUID())
+                .dateTimeReservation(LocalDateTime.now())
+                .dateStart(LocalDate.now())
+                .dateEnd(LocalDate.now().plusDays(totalDays))
+                .totalDays(totalDays)
+                .price(hotel.getPrice().multiply(ReservationService.charger_price_percentage))
+                .hotel(hotel)
+                .customer(customer)
+                .build();
+
+        return  this.reservationRepository.save(reservationToPersist);
     }
 
 }
