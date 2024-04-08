@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+// Define the service for managing tickets
 @Transactional
 @Service
 @Slf4j
@@ -30,21 +31,22 @@ import java.util.UUID;
 
 public class TicketService implements ITicketService {
 
+    // Inject the fly, customer, and ticket repositories
     private final FlyRepository flyRepository;
     private final CustomerRepository customerRepository;
     private final TicketRepository ticketRepository;
 
-    //  ---- Helpers ----
+    // Inject the customer helper
     private final CustomerHelper customerHelper;
 
-// *************************** CRUD ***************************
-
-    // ------------- Create Method -------------
+    // Define the method for creating a new ticket
     @Override
     public TicketResponse create(TicketRequest request) {
+        // Retrieve the fly and customer from the repositories
         var fly = flyRepository.findById(request.getIdFly()).orElseThrow();
         var customer = customerRepository.findById(request.getIdClient()).orElseThrow();
 
+        // Build the ticket entity to persist
         var ticketToPersist = TicketEntity.builder()
                 .id(UUID.randomUUID())
                 .fly(fly)
@@ -55,56 +57,70 @@ public class TicketService implements ITicketService {
                 .departureDate(BestTravelUtil.getRandomSoon())
                 .build();
 
+        // Save the ticket entity and increase the customer count
         var ticketPersisted = this.ticketRepository.save(ticketToPersist);
         log.info("Ticket Saved with id:{}", ticketPersisted.getId());
         customerHelper.increase(customer.getDni(), TicketService.class);
 
+        // Convert the ticket entity to a response and return it
         return this.entityToResponse(ticketPersisted);
     }
 
-
-    // ------------- Read Method -------------
+    // Define the method for retrieving a ticket by its ID
     @Override
     public TicketResponse read(UUID id) {
+        // Retrieve the ticket from the repository
         var  ticketFromDB = this.ticketRepository.findById(id).orElseThrow();
+
+        // Convert the ticket entity to a response and return it
         return this.entityToResponse(ticketFromDB);
     }
 
-    // ------------- Update Method -------------
-
+    // Define the method for updating a ticket by its ID
     @Override
     public TicketResponse update(TicketRequest requestUpdate, UUID idUpdate) {
-
+        // Retrieve the ticket to update and the fly from the repositories
         var ticketToUpdate = ticketRepository.findById(idUpdate).orElseThrow();
         var fly = flyRepository.findById(requestUpdate.getIdFly()).orElseThrow();
 
+        // Update the ticket details
         ticketToUpdate.setFly(fly);
         ticketToUpdate.setPrice(fly.getPrice().multiply(charger_price_percentage));
         ticketToUpdate.setArrivalDate(BestTravelUtil.getRandomLatter());
         ticketToUpdate.setDepartureDate(BestTravelUtil.getRandomSoon());
 
+        // Save the updated ticket entity
         var ticketUpdated = this.ticketRepository.save(ticketToUpdate);
         log.info("Ticket Updated with id: {}",ticketUpdated.getId());
+
+        // Convert the ticket entity to a response and return it
         return this.entityToResponse(ticketUpdated);
     }
 
-    // ------------- Delete Method -------------
+    // Define the method for deleting a ticket by its ID
     @Override
     public void delete(UUID idDelete) {
+        // Retrieve the ticket to delete from the repository
         var ticketToDelete = ticketRepository.findById(idDelete).orElseThrow();
-        this.ticketRepository.delete(ticketToDelete);
 
+        // Delete the ticket
+        this.ticketRepository.delete(ticketToDelete);
     }
 
+    // Define the method for finding the price of a fly
     @Override
     public BigDecimal findPrice(Long flyId) {
+        // Retrieve the fly from the repository
         var fly=this.flyRepository.findById(flyId).orElseThrow();
+
+        // Calculate and return the price
         return fly.getPrice().multiply(charger_price_percentage);
     }
 
-    //metodo que nos permite cambiar entidades a respuestas
+    // Define the method for converting a ticket entity to a ticket response
     private TicketResponse entityToResponse(TicketEntity entity){
         var response = new TicketResponse();
+        // Copy properties from the entity to the response
         BeanUtils.copyProperties(entity,response);
         var flyResponse = new FlyResponse();
         BeanUtils.copyProperties(entity.getFly(),flyResponse);
@@ -113,6 +129,7 @@ public class TicketService implements ITicketService {
         return response;
     }
 
+    // Define the charger price percentage
     public static final BigDecimal charger_price_percentage = BigDecimal.valueOf(1.25);
 
 }
